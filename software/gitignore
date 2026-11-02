@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Datasets
+datasets/
+
+# Runtime outputs
+outputs/
+*.jsonl
+*.mp4
+*.avi
+
+# Model weights
+# Ignore training/debug weights but keep the deployment model.
+models/*.pth
+models/*.pt
+models/*.onnx
+!models/image_analyzer_v2_best.pth
+
+# Archives
+*.rar
+*.7z
+
+# Logs
+*.log
+
+# Vivado / Vitis
+.Xil/
+*.cache/
+*.runs/
+*.gen/
+*.sim/
+*.ip_user_files/

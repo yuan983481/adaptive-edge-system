@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Runtime outputs
+software/outputs/
+software/*.jsonl
+software/*.mp4
+software/*.avi
+
+# Datasets
+software/datasets/
+
+# Model weights: ignore training/debug weights,
+# but KEEP the deployment model required by the README.
+software/models/*.pth
+software/models/*.pt
+software/models/*.onnx
+!software/models/image_analyzer_v2_best.pth
+
+# Vivado / Vitis generated files
+.Xil/
+*.cache/
+*.runs/
+*.gen/
+*.sim/
+*.ip_user_files/
+vivado_bd/**/.Xil/
+vivado_bd/**/*.cache/
+vivado_bd/**/*.runs/
+vivado_bd/**/*.gen/
+vivado_bd/**/*.sim/
+
+# Logs / temporary files
+*.log
+*.tmp
+
+# Archives not used as project deliverables
+*.rar
+*.7z

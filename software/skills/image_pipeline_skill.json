@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "role": "Constrained image-processing pipeline knowledge",
+  "stages": {
+    "preprocess": ["gaussian", "median", "gamma", "clahe", "sharpen"],
+    "edge": ["roberts", "sobel", "canny", "hed"],
+    "postprocess": ["erosion", "dilation", "opening", "closing"]
+  },
+  "rules": [
+    "Prefer median for strong impulse noise.",
+    "Prefer gaussian before gradient-based edge detection when random noise is high.",
+    "Prefer gamma when low-light score is high.",
+    "Prefer CLAHE when contrast is low.",
+    "Do not sharpen strongly before denoising when noise is high.",
+    "Roberts is suitable when latency/resource priority is very high and the image is relatively clean.",
+    "Sobel is a strong real-time default.",
+    "Canny is suitable when edge quality and thin/continuous contours matter.",
+    "HED is an expensive high-quality branch for complex scenes.",
+    "Opening can remove isolated edge noise.",
+    "Closing can bridge small gaps in contours.",
+    "Use at most two preprocessing and two postprocessing operators.",
+    "Only generate operators that exist in the operator catalog."
+  ],
+  "parameter_ranges": {
+    "gaussian": {
+      "kernel": [3, 5],
+      "sigma": [0.0, 3.0]
+    },
+    "median": {
+      "kernel": [3, 5]
+    },
+    "gamma": {
+      "gamma": [0.5, 2.5]
+    },
+    "clahe": {
+      "clip_limit": [1.0, 4.0]
+    },
+    "sharpen": {
+      "strength": [0.0, 2.0]
+    },
+    "sobel": {
+      "threshold": [0, 255]
+    },
+    "roberts": {
+      "threshold": [0, 255]
+    },
+    "canny": {
+      "low_threshold": [0, 255],
+      "high_threshold": [0, 255]
+    },
+    "erosion": {
+      "kernel": [3, 5],
+      "iterations": [1, 3]
+    },
+    "dilation": {
+      "kernel": [3, 5],
+      "iterations": [1, 3]
+    },
+    "opening": {
+      "kernel": [3, 5],
+      "iterations": [1, 3]
+    },
+    "closing": {
+      "kernel": [3, 5],
+      "iterations": [1, 3]
+    }
+  }
+}

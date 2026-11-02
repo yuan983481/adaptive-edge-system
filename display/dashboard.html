@@ -1,0 +1,2264 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adaptive Edge Intelligence — FPGA Agent Dashboard</title>
+
+<style>
+:root {
+    --bg: #071013;
+    --panel: #0c181c;
+    --panel2: #102126;
+    --line: #27434a;
+    --text: #e7f1f1;
+    --muted: #879da1;
+
+    --cyan: #58d5e6;
+    --amber: #ffbc66;
+    --green: #68d391;
+    --violet: #b7a4ff;
+
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    color: var(--text);
+
+    font-family:
+        "Segoe UI",
+        "Microsoft YaHei",
+        system-ui,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 30% 0%,
+            #10262d 0,
+            #081216 38%,
+            #050a0c 100%
+        );
+}
+
+.app {
+    max-width: 1580px;
+    margin: auto;
+    padding: 22px 26px 30px;
+}
+
+/* ---------- header ---------- */
+
+header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+    color: var(--cyan);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 6px 0 2px;
+
+    font-size: 26px;
+    letter-spacing: -.025em;
+}
+
+.subtitle {
+    margin: 0;
+
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.badges {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 11px;
+
+    border: 1px solid var(--line);
+    border-radius: 999px;
+
+    background: #0a1519;
+
+    color: #bed0d3;
+    font-size: 11px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 0 3px #68d3911d,
+        0 0 14px #68d39166;
+}
+
+.dot.amber {
+    background: var(--amber);
+
+    box-shadow:
+        0 0 0 3px #ffbc661d,
+        0 0 14px #ffbc6666;
+}
+
+/* ---------- file loader ---------- */
+
+.loader {
+    margin-top: 16px;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    padding: 10px 12px;
+
+    border: 1px dashed #31525a;
+    border-radius: 12px;
+
+    background: #081317;
+}
+
+.loader-title {
+    margin-right: 6px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.file-button {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 7px 10px;
+
+    border: 1px solid #345761;
+    border-radius: 8px;
+
+    background: #102126;
+
+    color: #d2e0e2;
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+.file-button input {
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+}
+
+.file-status {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+    margin-top: 16px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.65fr)
+        minmax(330px, .7fr);
+
+    gap: 16px;
+}
+
+/* ---------- video ---------- */
+
+.video-shell {
+    overflow: hidden;
+
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+
+    background: #030708;
+
+    box-shadow: 0 28px 90px #0008;
+}
+
+.video-head {
+    min-height: 47px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 14px;
+
+    border-bottom: 1px solid #1d3339;
+
+    background: #091418;
+}
+
+.video-title {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.video-meta {
+    margin-left: 8px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.frame-text {
+    color: #9cb1b4;
+
+    font-size: 11px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.video-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 1px;
+
+    background: #25444c;
+
+    aspect-ratio: 16 / 4.55;
+}
+
+.video-view {
+    position: relative;
+
+    overflow: hidden;
+
+    background: #010405;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+.video-label {
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+
+    padding: 6px 8px;
+
+    border: 1px solid #365861;
+    border-radius: 8px;
+
+    background: #071114d5;
+
+    color: #d7e6e8;
+
+    font-size: 10px;
+
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.video-label.edge {
+    color: var(--cyan);
+}
+
+.controls {
+    display: grid;
+
+    grid-template-columns:
+        auto
+        auto
+        1fr
+        auto
+        auto;
+
+    gap: 10px;
+
+    align-items: center;
+
+    padding: 11px 14px;
+
+    background: #091418;
+}
+
+button,
+select {
+    height: 34px;
+
+    border: 1px solid #33555e;
+    border-radius: 8px;
+
+    background: #102126;
+    color: var(--text);
+}
+
+button {
+    padding: 0 12px;
+
+    cursor: pointer;
+}
+
+button:hover {
+    border-color: #51808b;
+}
+
+.seek {
+    width: 100%;
+
+    accent-color: var(--cyan);
+}
+
+.time {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- side ---------- */
+
+.side {
+    display: grid;
+    gap: 12px;
+
+    align-content: start;
+}
+
+.panel {
+    padding: 14px;
+
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+
+    background:
+        linear-gradient(
+            180deg,
+            #0d1a1e,
+            #091417
+        );
+}
+
+.panel-title {
+    margin-bottom: 11px;
+
+    color: #90a8ac;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+/* ---------- scene ---------- */
+
+.scene-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.scene {
+    font-size: 26px;
+    font-weight: 760;
+
+    letter-spacing: -.03em;
+}
+
+.scene-source {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.score-ring {
+    position: relative;
+
+    width: 60px;
+    height: 60px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            var(--amber) 68%,
+            #183139 0
+        );
+}
+
+.score-ring::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 6px;
+
+    border-radius: 50%;
+
+    background: #0b171a;
+}
+
+.score-ring strong {
+    position: relative;
+
+    z-index: 2;
+
+    font-size: 12px;
+}
+
+/* ---------- pipeline ---------- */
+
+.pipeline {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+.stage {
+    padding: 7px 9px;
+
+    border: 1px solid #31535c;
+    border-radius: 8px;
+
+    background: #102126;
+
+    color: #dce8ea;
+
+    font-size: 11px;
+}
+
+.stage.edge {
+    color: #8ee9f5;
+
+    border-color: #287080;
+
+    background: #0a2026;
+}
+
+.stage.post {
+    color: #ffd18c;
+
+    border-color: #715f34;
+
+    background: #201b0e;
+}
+
+.arrow {
+    color: #607d82;
+}
+
+/* ---------- fast / slow ---------- */
+
+.loop-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+}
+
+.loop {
+    padding: 11px;
+
+    border: 1px solid #29464d;
+    border-radius: 10px;
+
+    background: #0a1619;
+}
+
+.loop-name {
+    color: #91a8ac;
+
+    font-size: 10px;
+
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.loop strong {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 14px;
+}
+
+.loop.fast strong {
+    color: var(--cyan);
+}
+
+.loop.slow strong {
+    color: var(--amber);
+}
+
+.loop-detail {
+    margin-top: 3px;
+
+    color: #758d91;
+
+    font-size: 10px;
+}
+
+/* ---------- metrics ---------- */
+
+.metrics {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    margin-top: 16px;
+
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+.metric {
+    padding: 13px 14px;
+
+    background: #091418;
+
+    border-right: 1px solid var(--line);
+}
+
+.metric:last-child {
+    border-right: 0;
+}
+
+.metric span {
+    display: block;
+
+    color: #81979b;
+
+    font-size: 9px;
+
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.metric strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 21px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.metric em {
+    color: #6f8589;
+
+    font-style: normal;
+    font-size: 10px;
+}
+
+/* ---------- lower ---------- */
+
+.lower {
+    display: grid;
+
+    grid-template-columns: 1.05fr .95fr;
+
+    gap: 16px;
+
+    margin-top: 16px;
+}
+
+/* ---------- metric bars ---------- */
+
+.state-bars {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 11px 18px;
+}
+
+.bar {
+    display: grid;
+
+    grid-template-columns:
+        90px
+        1fr
+        46px;
+
+    gap: 8px;
+
+    align-items: center;
+}
+
+.bar label {
+    color: #9cafb2;
+
+    font-size: 10px;
+}
+
+.track {
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #142a30;
+}
+
+.fill {
+    height: 100%;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #3daabb,
+            #76e3ed
+        );
+}
+
+.bar output {
+    text-align: right;
+
+    color: #c7d5d7;
+
+    font-size: 10px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- events ---------- */
+
+.events {
+    max-height: 185px;
+
+    overflow: auto;
+}
+
+.event {
+    display: grid;
+
+    grid-template-columns:
+        52px
+        10px
+        1fr;
+
+    gap: 8px;
+
+    padding: 7px 0;
+
+    border-bottom: 1px solid #183139;
+
+    color: #b6c7ca;
+
+    font-size: 11px;
+}
+
+.event-frame {
+    color: #71888c;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.event-dot {
+    width: 7px;
+    height: 7px;
+
+    margin-top: 5px;
+
+    border-radius: 50%;
+
+    background: #5d7b81;
+}
+
+.event.slow .event-dot {
+    background: var(--amber);
+}
+
+.event.fast .event-dot {
+    background: var(--cyan);
+}
+
+.event.cache .event-dot {
+    background: var(--violet);
+}
+
+/* ---------- footer ---------- */
+
+footer {
+    margin-top: 12px;
+
+    color: #61777b;
+
+    font-size: 9px;
+
+    text-align: right;
+
+    letter-spacing: .07em;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1050px) {
+
+    .hero,
+    .lower {
+        grid-template-columns: 1fr;
+    }
+
+    .video-grid {
+        aspect-ratio: 16 / 6;
+    }
+}
+
+@media (max-width: 680px) {
+
+    .app {
+        padding: 14px;
+    }
+
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .video-grid {
+        grid-template-columns: 1fr;
+        aspect-ratio: auto;
+    }
+
+    .video-view {
+        aspect-ratio: 16 / 9;
+    }
+
+    .metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .state-bars {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        grid-template-columns:
+            auto
+            auto
+            1fr;
+    }
+
+    .time,
+    select {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div>
+
+<div class="eyebrow">
+Adaptive Edge Intelligence / V4
+</div>
+
+<h1>
+FPGA Agent Control Desk
+</h1>
+
+<p class="subtitle">
+Scene-aware dual-loop planning · DeepSeek slow loop · FPGA tiled execution
+</p>
+
+</div>
+
+<div class="badges">
+
+<div class="badge">
+<span class="dot"></span>
+FPGA PIPELINE
+</div>
+
+<div class="badge">
+<span class="dot"></span>
+AGENT TRACE
+</div>
+
+<div class="badge">
+<span class="dot amber"></span>
+SLOW LOOP
+</div>
+
+</div>
+
+</header>
+
+<div class="loader">
+
+<span class="loader-title">
+载入真实实验结果
+</span>
+
+<label class="file-button">
+FPGA 视频
+<input id="videoFile"
+       type="file"
+       accept="video/*">
+</label>
+
+<label class="file-button">
+Trace JSONL
+<input id="traceFile"
+       type="file"
+       accept=".jsonl,text/plain">
+</label>
+
+<label class="file-button">
+Summary JSON
+<input id="summaryFile"
+       type="file"
+       accept=".json,application/json">
+</label>
+
+<span
+    class="file-status"
+    id="fileStatus">
+请选择三个实验文件
+</span>
+
+</div>
+
+<section class="hero">
+
+<div class="video-shell">
+
+<div class="video-head">
+
+<div class="video-title">
+
+FPGA VIDEO PATH
+
+<span
+    class="video-meta"
+    id="videoMeta">
+等待视频
+</span>
+
+</div>
+
+<div
+    class="frame-text"
+    id="frameText">
+FRAME —
+</div>
+
+</div>
+
+<div class="video-grid">
+
+<div class="video-view">
+
+<canvas
+    id="sourceCanvas"
+    width="960"
+    height="540">
+</canvas>
+
+<div class="video-label">
+Source / Scene State
+</div>
+
+</div>
+
+<div class="video-view">
+
+<canvas
+    id="edgeCanvas"
+    width="960"
+    height="540">
+</canvas>
+
+<div class="video-label edge">
+FPGA Edge Output
+</div>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button id="playButton">
+▶ Play
+</button>
+
+<button id="restartButton">
+↺
+</button>
+
+<input
+    class="seek"
+    id="seek"
+    type="range"
+    min="0"
+    max="1000"
+    value="0">
+
+<span
+    class="time"
+    id="timeText">
+00:00 / 00:00
+</span>
+
+<select id="speed">
+<option value="0.5">0.5×</option>
+<option value="1" selected>1×</option>
+<option value="2">2×</option>
+</select>
+
+</div>
+
+</div>
+
+<div class="side">
+
+<div class="panel">
+
+<div class="panel-title">
+Scene Decision
+</div>
+
+<div class="scene-row">
+
+<div
+    class="scene"
+    id="sceneText">
+
+—
+
+<span
+    class="scene-source"
+    id="plannerText">
+planner / —
+</span>
+
+</div>
+
+<div
+    class="score-ring"
+    id="scoreRing">
+
+<strong id="scoreText">
+0.00
+</strong>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-title">
+Compiled Pipeline
+</div>
+
+<div
+    class="pipeline"
+    id="pipeline">
+
+<span class="stage">
+Waiting
+</span>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-title">
+Dual-loop Controller
+</div>
+
+<div class="loop-grid">
+
+<div class="loop fast">
+
+<div class="loop-name">
+Fast Loop
+</div>
+
+<strong id="fastLoop">
+IDLE
+</strong>
+
+<div
+    class="loop-detail"
+    id="fastReason">
+—
+</div>
+
+</div>
+
+<div class="loop slow">
+
+<div class="loop-name">
+Slow Loop
+</div>
+
+<strong id="slowLoop">
+IDLE
+</strong>
+
+<div
+    class="loop-detail"
+    id="slowReason">
+—
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="metrics">
+
+<div class="metric">
+
+<span>
+Processing
+</span>
+
+<strong id="processingMetric">
+—
+</strong>
+
+<em>
+ms / frame
+</em>
+
+</div>
+
+<div class="metric">
+
+<span>
+Effective FPS
+</span>
+
+<strong id="fpsMetric">
+—
+</strong>
+
+<em>
+FPGA tiled
+</em>
+
+</div>
+
+<div class="metric">
+
+<span>
+DeepSeek Replans
+</span>
+
+<strong id="deepseekMetric">
+—
+</strong>
+
+<em>
+slow loop
+</em>
+
+</div>
+
+<div class="metric">
+
+<span>
+Cache Hits
+</span>
+
+<strong id="cacheMetric">
+—
+</strong>
+
+<em>
+pipeline reuse
+</em>
+
+</div>
+
+</section>
+
+<section class="lower">
+
+<div class="panel">
+
+<div class="panel-title">
+Image State / FPGA Feedback
+</div>
+
+<div
+    class="state-bars"
+    id="stateBars">
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-title">
+Decision Timeline
+</div>
+
+<div
+    class="events"
+    id="events">
+
+<div class="event">
+
+<span class="event-frame">
+—
+</span>
+
+<span class="event-dot">
+</span>
+
+<span>
+等待 Trace
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<footer>
+REAL FPGA TRACE REPLAY · frame-synchronized telemetry
+</footer>
+
+</div>
+
+<video
+    id="video"
+    playsinline
+    style="display:none">
+</video>
+
+<script>
+
+/* ============================================================
+   State
+   ============================================================ */
+
+const video = document.getElementById("video");
+
+const sourceCanvas =
+    document.getElementById("sourceCanvas");
+
+const edgeCanvas =
+    document.getElementById("edgeCanvas");
+
+const sourceCtx =
+    sourceCanvas.getContext("2d");
+
+const edgeCtx =
+    edgeCanvas.getContext("2d");
+
+let trace = [];
+
+let summary = {};
+
+let sourceFPS = 30;
+
+let videoURL = null;
+
+
+/* ============================================================
+   Utility
+   ============================================================ */
+
+function clamp01(value) {
+
+    value = Number(value || 0);
+
+    return Math.max(
+        0,
+        Math.min(1, value)
+    );
+}
+
+
+function formatTime(seconds) {
+
+    if (!Number.isFinite(seconds)) {
+        return "00:00.00";
+    }
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const remain =
+        seconds - minutes * 60;
+
+    return (
+        String(minutes).padStart(2, "0")
+        + ":"
+        + remain.toFixed(2).padStart(5, "0")
+    );
+}
+
+
+function operationText(op) {
+
+    if (!op) {
+        return "Unknown";
+    }
+
+    const name =
+        String(op.op || "op")
+            .replaceAll("_", " ");
+
+    const values = [];
+
+    const fields = [
+        "strength",
+        "sigma",
+        "low_threshold",
+        "high_threshold",
+        "kernel",
+        "iterations",
+        "clip_limit",
+        "gamma"
+    ];
+
+    for (const field of fields) {
+
+        if (op[field] !== undefined) {
+
+            values.push(
+                op[field]
+            );
+        }
+    }
+
+    let result =
+        name.charAt(0).toUpperCase()
+        + name.slice(1);
+
+    if (values.length) {
+
+        result +=
+            " "
+            + values.join(" / ");
+    }
+
+    return result;
+}
+
+
+/* ============================================================
+   Current frame / telemetry
+   ============================================================ */
+
+function currentFrameNumber() {
+
+    return Math.floor(
+        video.currentTime
+        * sourceFPS
+    );
+}
+
+
+function currentRecord() {
+
+    if (!trace.length) {
+
+        return null;
+    }
+
+    const frame =
+        Math.max(
+            0,
+            Math.min(
+                trace.length - 1,
+                currentFrameNumber()
+            )
+        );
+
+    const record =
+        trace[frame];
+
+    if (!record) {
+
+        return null;
+    }
+
+    return record;
+}
+
+
+/* ============================================================
+   Scene panel
+   ============================================================ */
+
+function updateScene(record) {
+
+    const sceneText =
+        document.getElementById(
+            "sceneText"
+        );
+
+    const plannerText =
+        document.getElementById(
+            "plannerText"
+        );
+
+    if (!record) {
+
+        sceneText.childNodes[0]
+            .nodeValue = "—";
+
+        plannerText.textContent =
+            "planner / —";
+
+        return;
+    }
+
+    let scene =
+        record.scene || "unknown";
+
+    const index =
+        Number(record.frame || 0);
+
+    const previous =
+        index > 0
+        ? trace[index - 1]?.scene
+        : null;
+
+    if (
+        record.scene_changed
+        && previous
+        && previous !== scene
+    ) {
+
+        scene =
+            previous
+            + " → "
+            + scene;
+    }
+
+    sceneText.childNodes[0]
+        .nodeValue = scene;
+
+    plannerText.textContent =
+        "planner / "
+        + (
+            record.planner_source
+            || "local"
+        );
+
+
+    const score =
+        clamp01(
+            record.change_score
+        );
+
+    document.getElementById(
+        "scoreText"
+    ).textContent =
+        score.toFixed(2);
+
+    document.getElementById(
+        "scoreRing"
+    ).style.background =
+        "conic-gradient("
+        + "var(--amber) "
+        + Math.round(score * 100)
+        + "%,"
+        + "#183139 0)";
+}
+
+
+/* ============================================================
+   Pipeline panel
+   ============================================================ */
+
+function updatePipeline(record) {
+
+    const container =
+        document.getElementById(
+            "pipeline"
+        );
+
+    const plan =
+        record?.plan;
+
+    if (!plan) {
+
+        container.innerHTML =
+            '<span class="stage">Waiting</span>';
+
+        return;
+    }
+
+    const stages = [];
+
+    for (
+        const op
+        of plan.preprocess || []
+    ) {
+
+        stages.push({
+            css: "",
+            text: operationText(op)
+        });
+    }
+
+    if (plan.edge_detector) {
+
+        stages.push({
+            css: "edge",
+            text:
+                operationText(
+                    plan.edge_detector
+                )
+        });
+    }
+
+    for (
+        const op
+        of plan.postprocess || []
+    ) {
+
+        stages.push({
+            css: "post",
+            text: operationText(op)
+        });
+    }
+
+
+    if (!stages.length) {
+
+        container.innerHTML =
+            '<span class="stage">Bypass</span>';
+
+        return;
+    }
+
+
+    container.innerHTML =
+        stages.map(
+            (stage, index) => {
+
+                let html = "";
+
+                if (index) {
+
+                    html +=
+                        '<span class="arrow">'
+                        + "→"
+                        + "</span>";
+                }
+
+                html +=
+                    '<span class="stage '
+                    + stage.css
+                    + '">'
+                    + stage.text
+                    + "</span>";
+
+                return html;
+            }
+        ).join("");
+}
+
+
+/* ============================================================
+   Fast / slow loop
+   ============================================================ */
+
+function updateLoops(record) {
+
+    if (!record) {
+
+        return;
+    }
+
+    const fastReason =
+        record.fast_reason || "";
+
+    const fastAdjusted =
+        /adjust|tune|increase|decrease|raise|lower/i
+        .test(fastReason);
+
+
+    document.getElementById(
+        "fastLoop"
+    ).textContent =
+        fastAdjusted
+        ? "LOCAL ADJUST"
+        : "PLAN REUSE";
+
+
+    document.getElementById(
+        "fastReason"
+    ).textContent =
+        fastReason
+        || "pipeline stable";
+
+
+    document.getElementById(
+        "slowLoop"
+    ).textContent =
+        record.slow_trigger
+        ? "DEEPSEEK EVENT"
+        : "IDLE";
+
+
+    document.getElementById(
+        "slowReason"
+    ).textContent =
+        record.slow_reason
+        || "no scene event";
+}
+
+
+/* ============================================================
+   Numeric metrics
+   ============================================================ */
+
+function updateMetrics(record) {
+
+    const processing =
+        Number(
+            record?.processing_ms
+            ?? summary.avg_processing_ms
+            ?? 0
+        );
+
+    document.getElementById(
+        "processingMetric"
+    ).textContent =
+        processing
+        ? processing.toFixed(1)
+        : "—";
+
+
+    const fps =
+        Number(
+            summary.effective_processing_fps
+            || 0
+        );
+
+    document.getElementById(
+        "fpsMetric"
+    ).textContent =
+        fps
+        ? fps.toFixed(2)
+        : "—";
+
+
+    document.getElementById(
+        "deepseekMetric"
+    ).textContent =
+        summary.deepseek_replans
+        ?? "—";
+
+
+    document.getElementById(
+        "cacheMetric"
+    ).textContent =
+        summary.cache_hits
+        ?? "—";
+}
+
+
+/* ============================================================
+   State bars
+   ============================================================ */
+
+function updateBars(record) {
+
+    const state =
+        record?.state || {};
+
+    const feedback =
+        record?.feedback || {};
+
+
+    const items = [
+
+        [
+            "Blur",
+            state.blur_level
+        ],
+
+        [
+            "Noise",
+            state.noise_level
+        ],
+
+        [
+            "Low light",
+            state.low_light
+        ],
+
+        [
+            "Low contrast",
+            state.low_contrast
+        ],
+
+        [
+            "Edge density",
+            feedback.edge_density
+            ?? state.edge_density
+        ],
+
+        [
+            "Texture",
+            state.texture_complexity
+        ]
+    ];
+
+
+    document.getElementById(
+        "stateBars"
+    ).innerHTML =
+        items.map(
+            ([name, raw]) => {
+
+                const value =
+                    clamp01(raw);
+
+                return `
+                <div class="bar">
+
+                    <label>
+                        ${name}
+                    </label>
+
+                    <div class="track">
+
+                        <div
+                            class="fill"
+                            style="width:${value * 100}%">
+                        </div>
+
+                    </div>
+
+                    <output>
+                        ${value.toFixed(3)}
+                    </output>
+
+                </div>
+                `;
+            }
+        ).join("");
+}
+
+
+/* ============================================================
+   Timeline
+   ============================================================ */
+
+function updateEvents(frame) {
+
+    if (!trace.length) {
+
+        return;
+    }
+
+    const records =
+        trace
+            .filter(
+                item =>
+                    item.frame <= frame
+                    &&
+                    (
+                        item.slow_trigger
+                        ||
+                        item.scene_changed
+                        ||
+                        item.fast_reason
+                        ||
+                        String(
+                            item.planner_source || ""
+                        )
+                        .includes("cache")
+                    )
+            )
+            .slice(-7)
+            .reverse();
+
+
+    const html =
+        records.map(
+            item => {
+
+                let css = "fast";
+
+                if (item.slow_trigger) {
+
+                    css = "slow";
+
+                } else if (
+                    String(
+                        item.planner_source || ""
+                    )
+                    .includes("cache")
+                ) {
+
+                    css = "cache";
+                }
+
+
+                let message =
+                    item.fast_reason
+                    || "pipeline reuse";
+
+
+                if (item.slow_trigger) {
+
+                    message =
+                        (
+                            item.slow_reason
+                            || "slow event"
+                        )
+                        + " · "
+                        + (
+                            item.planner_source
+                            || ""
+                        );
+                }
+
+
+                return `
+                <div class="event ${css}">
+
+                    <span class="event-frame">
+                        F${String(item.frame).padStart(3, "0")}
+                    </span>
+
+                    <span class="event-dot">
+                    </span>
+
+                    <span>
+                        ${message}
+                    </span>
+
+                </div>
+                `;
+            }
+        )
+        .join("");
+
+
+    document.getElementById(
+        "events"
+    ).innerHTML =
+        html
+        || "<div class='event'>暂无事件</div>";
+}
+
+
+/* ============================================================
+   Full telemetry update
+   ============================================================ */
+
+function updateTelemetry() {
+
+    const record =
+        currentRecord();
+
+    if (!record) {
+
+        return;
+    }
+
+    updateScene(record);
+
+    updatePipeline(record);
+
+    updateLoops(record);
+
+    updateMetrics(record);
+
+    updateBars(record);
+
+    updateEvents(
+        record.frame || 0
+    );
+
+
+    document.getElementById(
+        "frameText"
+    ).textContent =
+        "FRAME "
+        + record.frame
+        + " / "
+        + (
+            summary.frames
+            || trace.length
+        );
+}
+
+
+/* ============================================================
+   Render video
+   ============================================================ */
+
+function renderVideo() {
+
+    if (
+        video.readyState >= 2
+        &&
+        video.videoWidth > 0
+    ) {
+
+        const width =
+            video.videoWidth;
+
+        const height =
+            video.videoHeight;
+
+
+        /*
+            Current FPGA output is:
+            1920x540
+
+            left  = original / state
+            right = FPGA edge output
+        */
+
+        const composite =
+            width / height > 2.3;
+
+
+        const half =
+            composite
+            ? width / 2
+            : width;
+
+
+        sourceCanvas.width =
+            half;
+
+        sourceCanvas.height =
+            height;
+
+        edgeCanvas.width =
+            half;
+
+        edgeCanvas.height =
+            height;
+
+
+        sourceCtx.drawImage(
+            video,
+            0,
+            0,
+            half,
+            height,
+            0,
+            0,
+            half,
+            height
+        );
+
+
+        if (composite) {
+
+            edgeCtx.drawImage(
+                video,
+                half,
+                0,
+                half,
+                height,
+                0,
+                0,
+                half,
+                height
+            );
+
+        } else {
+
+            edgeCtx.drawImage(
+                video,
+                0,
+                0,
+                half,
+                height,
+                0,
+                0,
+                half,
+                height
+            );
+        }
+
+
+        document.getElementById(
+            "videoMeta"
+        ).textContent =
+            Math.round(half)
+            + "×"
+            + height
+            + " · "
+            + (
+                composite
+                ? "FPGA composite replay"
+                : "single stream"
+            );
+
+
+        if (video.duration) {
+
+            document.getElementById(
+                "seek"
+            ).value =
+                (
+                    video.currentTime
+                    / video.duration
+                )
+                * 1000;
+        }
+
+
+        document.getElementById(
+            "timeText"
+        ).textContent =
+            formatTime(
+                video.currentTime
+            )
+            + " / "
+            + formatTime(
+                video.duration
+            );
+
+
+        updateTelemetry();
+    }
+
+
+    requestAnimationFrame(
+        renderVideo
+    );
+}
+
+
+requestAnimationFrame(
+    renderVideo
+);
+
+
+/* ============================================================
+   Player controls
+   ============================================================ */
+
+const playButton =
+    document.getElementById(
+        "playButton"
+    );
+
+
+playButton.onclick =
+    () => {
+
+        if (!video.src) {
+
+            return;
+        }
+
+        if (video.paused) {
+
+            video.play();
+
+        } else {
+
+            video.pause();
+        }
+    };
+
+
+video.onplay =
+    () => {
+
+        playButton.textContent =
+            "❚❚ Pause";
+    };
+
+
+video.onpause =
+    () => {
+
+        playButton.textContent =
+            "▶ Play";
+    };
+
+
+document.getElementById(
+    "restartButton"
+).onclick =
+    () => {
+
+        video.currentTime = 0;
+
+        video.play();
+    };
+
+
+document.getElementById(
+    "seek"
+).oninput =
+    event => {
+
+        if (!video.duration) {
+
+            return;
+        }
+
+        video.currentTime =
+            (
+                event.target.value
+                / 1000
+            )
+            * video.duration;
+    };
+
+
+document.getElementById(
+    "speed"
+).onchange =
+    event => {
+
+        video.playbackRate =
+            Number(
+                event.target.value
+            );
+    };
+
+
+/* ============================================================
+   File loading
+   ============================================================ */
+
+document.getElementById(
+    "videoFile"
+).onchange =
+    event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+
+            return;
+        }
+
+        if (videoURL) {
+
+            URL.revokeObjectURL(
+                videoURL
+            );
+        }
+
+        videoURL =
+            URL.createObjectURL(
+                file
+            );
+
+        video.src =
+            videoURL;
+
+        document.getElementById(
+            "fileStatus"
+        ).textContent =
+            "Video: "
+            + file.name;
+    };
+
+
+document.getElementById(
+    "traceFile"
+).onchange =
+    async event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+
+            return;
+        }
+
+
+        const text =
+            await file.text();
+
+
+        trace =
+            text
+                .split(/\r?\n/)
+                .filter(Boolean)
+                .map(
+                    line => {
+
+                        try {
+
+                            return JSON.parse(
+                                line
+                            );
+
+                        } catch {
+
+                            return null;
+                        }
+                    }
+                )
+                .filter(Boolean);
+
+
+        if (trace.length) {
+
+            sourceFPS =
+                Number(
+                    trace[0].source_fps
+                    || 30
+                );
+        }
+
+
+        document.getElementById(
+            "fileStatus"
+        ).textContent +=
+            " · Trace "
+            + trace.length
+            + " frames";
+
+
+        updateTelemetry();
+    };
+
+
+document.getElementById(
+    "summaryFile"
+).onchange =
+    async event => {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+
+            return;
+        }
+
+
+        try {
+
+            summary =
+                JSON.parse(
+                    await file.text()
+                );
+
+
+            document.getElementById(
+                "fileStatus"
+            ).textContent +=
+                " · Summary loaded";
+
+
+            updateMetrics(
+                currentRecord()
+            );
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+        }
+    };
+
+</script>
+
+</body>
+</html>

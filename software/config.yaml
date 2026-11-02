@@ -1,0 +1,65 @@
+project:
+  name: adaptive-edge-system
+  output_dir: outputs
+
+planner:
+  # Board bring-up defaults to deterministic local planning.
+  # Change back to "agent" after requests/LLM configuration is ready.
+  mode: rule
+
+  max_pre_ops: 3
+  max_post_ops: 2
+
+  latency_priority: balanced
+  quality_priority: balanced
+  resource_budget: medium
+
+hed:
+  prototxt: models/hed/deploy.prototxt
+  caffemodel: models/hed/hed_pretrained_bsds.caffemodel
+  input_width: 500
+  input_height: 500
+
+fpga:
+  runtime: edf_dma_proxy
+
+  # edge_accel UIO device confirmed on the EDF board.
+  uio_device: /dev/uio0
+  ctrl_uio_map: 0
+  gamma_uio_map: 1
+  mmio_span: 0x10000
+
+  # Device nodes created by dma-proxy.ko + the dma_proxy DT node.
+  dma_tx_device: /dev/dma_proxy_tx
+  dma_rx_device: /dev/dma_proxy_rx
+
+  # Must match BUFFER_SIZE in dma-proxy.h.
+  # 512 KiB > 640*480 = 307200-byte maximum GRAY8 frame.
+  dma_buffer_size: 524288
+
+  expected_capability: 0x010007ff
+  timeout_s: 5.0
+
+  # Defaults mirror hardware_capability.py.
+  registers: {}
+
+agent:
+  max_iterations: 2
+  edge_density_min: 0.015
+  edge_density_max: 0.25
+  max_tiny_component_ratio: 0.65
+  min_gt_f1: 0.80
+
+video_agent:
+  ema_alpha: 0.25
+  hysteresis_enter_factor: 1.05
+  hysteresis_exit_factor: 0.85
+  scene_change_threshold: 0.18
+  min_replan_interval_frames: 30
+  periodic_replan_frames: 300
+  feedback_bad_frames: 5
+  threshold_step: 4
+  fast_adjust_bad_frames: 3
+  fast_adjust_cooldown_frames: 5
+  enable_scene_cache: true
+  refine_on_feedback: true
